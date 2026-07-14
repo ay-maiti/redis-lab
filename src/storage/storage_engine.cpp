@@ -1,10 +1,16 @@
 #include "storage_engine.h"
 
-bool StorageEngine::Set(const std::string& key,
-                        const std::string& value)
+Status StorageEngine::Set(const std::string& key,
+                          const std::string& value)
 {
+    if (key.empty())
+    {
+        return Status::INVALID_KEY;
+    }
+
     store_[key] = value;
-    return true;
+
+    return Status::OK;
 }
 
 std::optional<std::string>
@@ -20,9 +26,14 @@ StorageEngine::Get(const std::string& key) const
     return it->second;
 }
 
-bool StorageEngine::Delete(const std::string& key)
+Status StorageEngine::Delete(const std::string& key)
 {
-    return store_.erase(key) > 0;
+    if (store_.erase(key) == 0)
+    {
+        return Status::KEY_NOT_FOUND;
+    }
+
+    return Status::OK;
 }
 
 bool StorageEngine::Exists(const std::string& key) const

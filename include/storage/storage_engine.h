@@ -5,6 +5,13 @@
 #include <string>
 #include <unordered_map>
 
+enum class Status
+{
+    OK,
+    KEY_NOT_FOUND,
+    INVALID_KEY
+};
+
 class StorageEngine
 {
 public:
@@ -20,11 +27,11 @@ public:
     StorageEngine& operator=(StorageEngine&&) = default;
 
     // Basic Redis commands
-    bool Set(const std::string& key, const std::string& value);
+    Status Set(const std::string& key, const std::string& value);
 
     std::optional<std::string> Get(const std::string& key) const;
 
-    bool Delete(const std::string& key);
+    Status Delete(const std::string& key);
 
     bool Exists(const std::string& key) const;
 
