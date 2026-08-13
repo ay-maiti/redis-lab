@@ -60,7 +60,32 @@ std::optional<Command> CommandParser::Parse(std::string_view input) const
     }
     else
     {
-        command.type = CommandType::UNKNOWN;
+        return std::nullopt;
+    }
+
+    const size_t arg_count = tokens.size() - 1;
+
+    switch (command.type)
+    {
+        case CommandType::PING:
+            if (arg_count != 0)
+                return std::nullopt;
+            break;
+
+        case CommandType::GET:
+        case CommandType::DEL:
+        case CommandType::EXISTS:
+            if (arg_count != 1)
+                return std::nullopt;
+            break;
+
+        case CommandType::SET:
+            if (arg_count != 2)
+                return std::nullopt;
+            break;
+
+        default:
+            return std::nullopt;
     }
 
     for (size_t i = 1; i < tokens.size(); ++i)
