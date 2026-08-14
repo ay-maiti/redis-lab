@@ -10,4 +10,5 @@ add_executable(redis_lab
     src/main.cpp
     src/server/blocking_server.cpp
     src/protocol/command_parser.cpp
+    src/dispatcher/command_dispatcher.cpp
 )
