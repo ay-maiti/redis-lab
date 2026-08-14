@@ -2,6 +2,7 @@
 #define BLOCKING_SERVER_H
 
 #include <cstdint>
+#include "protocol/command_parser.h"
 
 class BlockingServer
 {
@@ -22,6 +23,7 @@ private:
 
     int server_fd_;
     uint16_t port_;
+    redis_lab::CommandParser command_parser_;
 };
 
 #endif

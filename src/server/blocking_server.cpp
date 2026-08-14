@@ -27,6 +27,21 @@ void BlockingServer::HandleClient(int clientSocket){
             break;
         }
         std::cout<<"Received: "<<buffer<<std::endl;
+        std::string_view request(buffer, val_read);
+        auto command = command_parser_.Parse(request);
+        if (!command)
+        {
+            std::cout << "Invalid command\n";
+            continue;
+        }
+
+        std::cout << "Command type: "
+                << static_cast<int>(command->type) << '\n';
+
+        for (const auto& arg : command->args)
+        {
+            std::cout << "Arg: " << arg << '\n';
+        }
         send(clientSocket, resp, strlen(resp), 0);
         std::cout<<"Response sent to client.\n";
     }
