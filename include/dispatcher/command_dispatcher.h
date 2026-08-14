@@ -1,6 +1,7 @@
 #pragma once
 
 #include "protocol/command.h"
+#include "storage/storage_engine.h"
 
 namespace redis_lab
 {
@@ -8,7 +9,12 @@ namespace redis_lab
 class CommandDispatcher
 {
 public:
+    explicit CommandDispatcher(StorageEngine& storage);
+
     void Execute(const Command& command);
+
+private:
+    StorageEngine& storage_;
 };
 
 } // namespace redis_lab
