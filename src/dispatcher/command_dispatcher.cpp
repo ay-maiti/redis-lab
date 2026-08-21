@@ -10,7 +10,7 @@ CommandDispatcher::CommandDispatcher(StorageEngine& storage)
 {
 }
 
-void CommandDispatcher::Execute(const Command& command)
+CommandResult CommandDispatcher::Execute(const Command& command)
 {
     switch (command.type)
     {
@@ -18,59 +18,63 @@ void CommandDispatcher::Execute(const Command& command)
         {
             auto status = storage_.Set(command.args[0], command.args[1]);
 
-            std::cout << "SET status: "
-                      << static_cast<int>(status)
-                      << '\n';
+            if (status == Status::INVALID_KEY)
+            {
+                return {CommandStatus::INVALID_KEY, std::nullopt};
+            }
 
-            break;
+            return {CommandStatus::OK, std::nullopt};
         }
 
         case CommandType::GET:
         {
             auto value = storage_.Get(command.args[0]);
 
-            if (value)
+            if (!value)
             {
-                std::cout << "GET value: " << *value << '\n';
-            }
-            else
-            {
-                std::cout << "GET: key not found\n";
+                return {CommandStatus::KEY_NOT_FOUND, std::nullopt};
             }
 
-            break;
+            return {CommandStatus::OK, *value};
         }
 
         case CommandType::DEL:
         {
             auto status = storage_.Delete(command.args[0]);
 
-            std::cout << "DEL status: "
-                      << static_cast<int>(status)
-                      << '\n';
+            if (status == Status::KEY_NOT_FOUND)
+            {
+                return {CommandStatus::KEY_NOT_FOUND, std::nullopt};
+            }
 
-            break;
+            if (status == Status::INVALID_KEY)
+            {
+                return {CommandStatus::INVALID_KEY, std::nullopt};
+            }
+
+            return {CommandStatus::OK, std::nullopt};
         }
 
         case CommandType::EXISTS:
         {
-            bool exists = storage_.Exists(command.args[0]);
-
-            std::cout << "EXISTS: "
-                      << exists
-                      << '\n';
-
-            break;
+            return {
+                CommandStatus::OK,
+                storage_.Exists(command.args[0]) ? "1" : "0"
+            };
         }
 
         case CommandType::PING:
         {
-            std::cout << "PONG\n";
-            break;
+            return {
+                CommandStatus::OK,
+                "PONG"
+            };
         }
 
         default:
-            break;
+        {
+            return {CommandStatus::INVALID_COMMAND, std::nullopt};
+        }
     }
 }
 

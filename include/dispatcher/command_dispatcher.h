@@ -11,7 +11,7 @@ class CommandDispatcher
 public:
     explicit CommandDispatcher(StorageEngine& storage);
 
-    void Execute(const Command& command);
+    CommandResult Execute(const Command& command);
 
 private:
     StorageEngine& storage_;
