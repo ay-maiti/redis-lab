@@ -11,8 +11,11 @@
 constexpr int kBacklog = 5;
 
 BlockingServer::BlockingServer(uint16_t port)
-    :server_fd_(-1),
-    port_(port)
+    : server_fd_(-1),
+      port_(port),
+      storage_(),
+      command_parser_(),
+      command_dispatcher_(storage_)
 {
 }
 
@@ -34,7 +37,7 @@ void BlockingServer::HandleClient(int clientSocket){
             std::cout << "Invalid command\n";
             continue;
         }
-
+        redis_lab::CommandResult result = command_dispatcher_.Execute(*command);
         std::cout << "Command type: "
                 << static_cast<int>(command->type) << '\n';
 

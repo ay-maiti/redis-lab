@@ -2,6 +2,7 @@
 
 #include "protocol/command.h"
 #include "storage/storage_engine.h"
+#include "command_result.h"
 
 namespace redis_lab
 {
