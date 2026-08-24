@@ -45,7 +45,28 @@ void BlockingServer::HandleClient(int clientSocket){
         {
             std::cout << "Arg: " << arg << '\n';
         }
-        send(clientSocket, resp, strlen(resp), 0);
+        std::string response;
+
+        switch (result.status)
+        {
+            case redis_lab::CommandStatus::OK:
+                response = result.value.value_or("OK");
+                break;
+
+            case redis_lab::CommandStatus::KEY_NOT_FOUND:
+                response = "KEY_NOT_FOUND";
+                break;
+
+            case redis_lab::CommandStatus::INVALID_KEY:
+                response = "INVALID_KEY";
+                break;
+
+            case redis_lab::CommandStatus::INVALID_COMMAND:
+                response = "INVALID_COMMAND";
+                break;
+        }
+        response += "\n";
+        send(clientSocket, response.data(), response.size(), 0);
         std::cout<<"Response sent to client.\n";
     }
     close(clientSocket);
